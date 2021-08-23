@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    *{
+      padding: 0;
+      margin: 0;
+      list-style: none;
+    }
+    .wrapper{width: 50%; margin: 50px auto;}
+    .flexBox-r{display: flex;}
+    .flex1{flex: 1;}
+    .hand{cursor: pointer;}
+    .shenlue{overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
+    .fr{float: right;}
+    .title{position: relative; height: 30px; line-height: 30px;}
+    .mg-lr10{margin-left: 10px; margin-right: 10px;}
+    .goodsUl{display: flex; flex-wrap: wrap; width: 100%;
+    border-top: 1px solid #ccc; padding-top: 8px;}
+    .goodsUl li{
+      width: 200px;
+      margin-left: 8px;
+      margin-bottom: 8px;
+      padding: 8px;
+      border: 1px solid #eee;
+    }
+    .goodsUl .goodImg{
+      width: 200px;
+      height: 200px;
+      background-color: #ccc;
+    }
+  
+    .cartUl{
+      position: absolute;
+      top: 30px;
+      right: 0;
+      height: 280px;
+      width: 200px;
+      overflow: auto;
+      background-color: #eee;
+      border: 1px solid #ddd;
+      padding: 5px 10px 30px;
+    }
+    .bugBtn{
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      text-align: center;
+    }
+    .bugBtn button{width: 80%;}
+  </style>
+  
+</head>
+<body>
+  <div>
+    <div class="wrapper" v-cloak id="app">
+      <div class="title" style="position: relative;">
+        购物天堂
+        <button class="fr" @click="showCart=!showCart">购物车{{cartData.length}}</button>
+        <ul class="cartUl" v-show="showCart">
+          <div v-if="cartData.length===0">购物车空空如也~</div>
+          <template v-else>
+            <li v-for="(item,index) in cartData"
+              :key="item.name+index">
+              {{item.name}}  {{item.price}}*{{item.count}}
+              <button @click="remove(item)">删除</button>
+            </li>
+          </template>
+          <p class="bugBtn"><button @click="buy">购买</button></p>
+        </ul>
+      </div>
+      <ul class="goodsUl">
+        <li
+          v-for="(item,index) in allGood"
+          :key="item.name+index">
+          <div class="goodImg"></div>
+          <div class="flexBox-r">
+            <div class="flex1 shenlue">
+              {{item.name}}
+            </div>
+            <div class="mg-lr10">￥{{item.price}}</div>
+            <div class="hand" @click="add(item)">+</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+  <script>
+    var vm = new Vue({
+      el: '#app',
+      data() {
+        return {
+          showCart: false,
+          cartData: [],
+          allGood: [
+            {
+              name: '香蕉',
+              price: 3,
+              count: 5,
+            },
+            {
+              name: '菠萝-广西很甜甜的菠萝新鲜好吃喔',
+              price: 2,
+              count: 5,
+            },
+            {
+              name: '葡萄',
+              price: 8,
+              count: 5,
+            },
+            {
+              name: '西瓜',
+              price: 2,
+              count: 12,
+            },
+          ],
+        };
+      },
+      methods: {
+        buy() {
+          // console.error('object');
+          // 计算总价
+          let money = 0;
+          for (let i = 0; i < this.cartData.length; i += 1) {
+            money += this.cartData[i].price * this.cartData[i].count;
+          }
+          alert(`总价${money}`);
+        },
+        remove(item) {
+          // console.error('rm:', item);
+          for (let i = 0; i < this.cartData.length; i += 1) {
+            if (this.cartData[i].name === item.name) {
+              if (this.cartData[i].count > 1) {
+                this.cartData[i].count -= 1;
+                break;
+              } else {
+                this.cartData.splice(i, 1);
+                break;
+              }
+            }
+          }
+        },
+        add(item) {
+          // 循环购物车，如果存在就加1，否则新增一个商品
+          let flag = false;
+          for (let i = 0; i < this.cartData.length; i += 1) {
+            if (this.cartData[i].name === item.name) {
+              this.cartData[i].count += 1;
+              flag = true;
+              break;
+            }
+          }
+          if (!flag) {
+            // 深拷贝一下，避免对象污染
+            const one = JSON.parse(JSON.stringify(item));
+            one.count = 1;
+            this.cartData.push(one);
+          }
+        },
+      },
+    });
+  </script>
+    
+</body>
+</html>
